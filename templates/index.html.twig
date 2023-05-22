@@ -6,6 +6,12 @@
 {% block body %}
 	<main>
 		<h1>Bienvenue !</h1>
-		<a href="{{ path('program_show', {id: 4}) }}">Afficher la 4ème série</a>
+		<a href="{{ path('program_index') }}">
+			La liste des programmes
+		</a>
+		<br>
+		<a href="{{ path('category_index') }}">
+			La liste des category
+		</a>
 	</main>
 {% endblock %}
