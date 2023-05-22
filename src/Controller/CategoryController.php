@@ -35,11 +35,9 @@ class CategoryController extends AbstractController
         } 
 
         $programs = $programRepository->findBy(
-            ['category' => $categories]
+            ['category' => $categories],
+            ['id' => 'DESC']
         );
-
-        /* var_dump($programs);
-        exit(); */
         
         return $this->render('category/show.html.twig', [
             'categories' => $categories,
