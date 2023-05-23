@@ -39,27 +39,52 @@ class ProgramFixtures extends Fixture implements DependentFixtureInterface
             'title' => 'ça la série ',
             'synopsis' => 'boouuuuuu',
             'category' => 'category_Horreur',
+        ],
+        [
+            'title' => 'ça l série ',
+            'synopsis' => 'boouuuuuu',
+            'category' => 'category_Horreur',
+        ],
+        [
+            'title' => 'ça a série ',
+            'synopsis' => 'boouuuuuu',
+            'category' => 'category_Horreur',
+        ],
+        [
+            'title' => 'ça la érie ',
+            'synopsis' => 'boouuuuuu',
+            'category' => 'category_Horreur',
+        ],
+        [
+            'title' => 'ça la srie ',
+            'synopsis' => 'boouuuuuu',
+            'category' => 'category_Horreur',
+        ], [
+            'title' => 'ça la séie ',
+            'synopsis' => 'boouuuuuu',
+            'category' => 'category_Horreur',
         ]
     ];
     public function load(ObjectManager $manager)
     {
         foreach (self::PROGRAMS as $key => $programe) {
-        $program = new Program();
-        $program->setTitle($programe['title']);
-        $program->setSynopsis($programe['synopsis']);
-        $program->setCategory($this->getReference($programe['category']));
-        $manager->persist($program);
-        }
+            $program = new Program();
+            $program->setTitle($programe['title']);
+            $program->setSynopsis($programe['synopsis']);
+            $program->setCategory($this->getReference($programe['category']));
+            $manager->persist($program);
 
-        $manager->flush();
+            $this->addReference('program_' . $programe['title'], $program);
+        }
+        
+        $manager->flush(); 
     }
+    
 
     public function getDependencies()
     {
         return [
-          CategoryFixtures::class,
+            CategoryFixtures::class,
         ];
     }
-
-
 }
