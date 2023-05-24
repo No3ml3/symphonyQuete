@@ -28,8 +28,9 @@
 			</tbody>
 		</table>
 		<ul>
-			{% for episode in episodes %}
+			{% for episode in season.episodes %}
 				<li>{{ episode.number ~ ' ' ~ episode.title ~ ' ' ~ episode.synopsis  }}</li>
+				<a href="{{path('program_episode_show',{'program':program.id,'season':season.id, 'episode':episode.id})}}">show Me</a>
 			{% else %}
 				Aucune episode trouvée.
 			{% endfor %}
