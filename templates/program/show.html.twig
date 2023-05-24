@@ -11,9 +11,13 @@
 					{{ program.category.name }}</p>
 			</div>
 			<ul>
-			{% for season in seasons %}
-			<li><a href="{{ path('season_index') }}">{{ season.description }}</a></li>
-			{% endfor %}
+				{% for season in seasons %}
+					{% if season.program.id == program.id %}
+						<li>
+							<a href="{{ path('program_season_show', {'programId': program.id, 'seasonId': season.id}) }}">{{ season.number }}</a>
+						</li>
+					{% endif %}
+				{% endfor %}
 			</ul>
 		</div>
 

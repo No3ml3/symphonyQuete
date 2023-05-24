@@ -28,7 +28,10 @@ class SeasonController extends AbstractController
     #[Route('/show/{id<^[0-9]+$>}', name: 'show')]
     public function show(Season $season, EpisodeRepository $episodeRepository): Response
     {
-        $episodes = $episodeRepository->findAll();
+        $episodes = $episodeRepository->findBy(
+            ['season' => $season],
+            ['id' => 'asc']
+        );
         return $this->render('season/show.html.twig', [
             'season' => $season,
             'episodes' => $episodes
