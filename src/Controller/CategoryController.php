@@ -8,6 +8,9 @@ use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\CategoryRepository;
 use App\Repository\ProgramRepository;
 use Symfony\Component\VarDumper\VarDumper;
+use App\Form\CategoryType;
+use App\Entity\Category;
+use Symfony\Component\HttpFoundation\Request;
 
 #[Route('/category', name: 'category_')]
 class CategoryController extends AbstractController
@@ -19,6 +22,23 @@ class CategoryController extends AbstractController
 
         return $this->render('category/index.html.twig', [
             'categories' => $categories,
+        ]);
+    }
+
+    #[Route('/new', name: 'new')]
+    public function new(Request $request, CategoryRepository $categoryRepository): Response
+    {
+        $category = new Category();
+        $form = $this->createForm(CategoryType::class, $category);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted()) {
+            $categoryRepository->save($category, true);  
+            return $this->redirectToRoute('category_index');          
+        }
+
+        return $this->render('category/new.html.twig', [
+            'form' => $form,
         ]);
     }
 
