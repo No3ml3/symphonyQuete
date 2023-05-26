@@ -15,4 +15,10 @@ Class DefaultController extends AbstractController
             'website' => 'Wild Series',
          ]);
     }
+
+    #[Route('/admin', name: 'admin_index')]
+    public function indexAdmin(): Response
+    {
+        return $this->render('admin.html.twig');
+    }
 }
