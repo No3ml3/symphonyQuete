@@ -10,7 +10,7 @@ use Faker\Factory;
 
 class SeasonFixtures extends Fixture implements DependentFixtureInterface
 {
-   /*  public const SEASONS = [
+    /*  public const SEASONS = [
         [
             'number' => 1,
             'description' => 'saison 1',
@@ -49,28 +49,44 @@ class SeasonFixtures extends Fixture implements DependentFixtureInterface
     public function load(ObjectManager $manager): void
     {
 
-    $faker = Factory::create();
-    for($i = 0; $i < 50; $i++) {
-        $season = new Season();
-        $season->setNumber($faker->numberBetween(1, 10));
-        $season->setYear($faker->year());
-        $season->setDescription($faker->paragraphs(3, true));
+        $pro = 0;
+        $for = 1;
+        $sea = 0;
+        $faker = Factory::create();
+        for ($i = 1; $i < 110; $i++) {
+            $sea++;
+            $season = new Season();
 
-        $season->setProgram($this->getReference('program_' . $faker->numberBetween(0, 5)));
+            if ($sea < 11) {
+                $season->setNumber($sea);
+            } else {
+                $sea = 1;
+                $season->setNumber($sea);
+            }
 
-        $manager->persist($season);
+            $season->setYear($faker->year());
+            $season->setDescription($faker->paragraphs(3, true));
+            $pro++;
+            if ($pro < 11) {
 
-        $this->addReference('season_' . $i, $season);
-    }
+                $season->setProgram($this->getReference('program_' . $for));
+            } else {
+                $for++;
+                $pro = 1;
+                $season->setProgram($this->getReference('program_' . $for));
+            }
+            $manager->persist($season);
 
-    $manager->flush();
+            $this->addReference('season_' . $i, $season);
+        }
 
+        $manager->flush();
     }
 
     public function getDependencies()
     {
         return [
-          ProgramFixtures::class,
+            ProgramFixtures::class,
         ];
     }
 }

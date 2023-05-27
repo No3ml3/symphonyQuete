@@ -11,7 +11,7 @@ use Faker\Factory;
 
 class EpisodeFixtures extends Fixture implements DependentFixtureInterface
 {
-   /*  public const EPISODES = [
+    /*  public const EPISODES = [
         [
             'title' => 'episode un',
             'number' => 1,
@@ -48,14 +48,32 @@ class EpisodeFixtures extends Fixture implements DependentFixtureInterface
 
         $faker = Factory::create();
 
-        for($i = 0; $i < 500; $i++) {
+
+        $sea = 0;
+        $ref = 1;
+        $pro =0;
+        for ($i = 1; $i < 1308; $i++) {
             $episode = new episode();
-            //Ce Faker va nous permettre d'alimenter l'instance de Season que l'on souhaite ajouter en base
             $episode->setTitle($faker->city);
-            $episode->setNumber($faker->numberBetween(1, 10));
+
+            $pro++;
+            if($pro < 13){
+            $episode->setNumber($pro);
+            } else {
+                $pro = 1;
+                $episode->setNumber($pro); 
+            }
+
             $episode->setSynopsis($faker->paragraphs(3, true));
 
-            $episode->setSeason($this->getReference('season_' . $faker->numberBetween(0, 49)));
+            $sea++;
+            if ($sea < 13) {
+                $episode->setSeason($this->getReference('season_' . $ref));
+            } else {
+                $ref++;
+                $sea = 1;
+                $episode->setSeason($this->getReference('season_' . $ref));
+            }
 
             $manager->persist($episode);
 
@@ -68,8 +86,7 @@ class EpisodeFixtures extends Fixture implements DependentFixtureInterface
     public function getDependencies()
     {
         return [
-          SeasonFixtures::class,
+            SeasonFixtures::class,
         ];
     }
-
 }

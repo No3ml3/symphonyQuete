@@ -4,7 +4,7 @@
 {% endblock %}
 
 {% block body %}
-	<main>
+	<div class="d-flex flex-column align-items-center">
 		<h1>Toutes les séries de la table program :
 		</h1>
 		<a href="/program/new">ADD</a>
@@ -22,5 +22,8 @@
 	{% else %}
 		Aucune série trouvée.
 	{% endfor %}
+
+	{{ app.session.get('total') }}
+
 	<a href="{{ path('app_index')}}">Retour à l'accueil</a>
-</main>{% endblock %}
+</div>{% endblock %}
