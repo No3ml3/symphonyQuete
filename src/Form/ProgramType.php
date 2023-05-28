@@ -2,11 +2,14 @@
 
 namespace App\Form;
 
+use App\Entity\Actor;
+use App\Repository\ActorRepository;
 use App\Entity\Program;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 class ProgramType extends AbstractType
 {
@@ -20,6 +23,19 @@ class ProgramType extends AbstractType
             ->add('year', )
             ->add('category', null, ['choice_label' => 'name'])
         ;
+
+        $builder->add('actors', EntityType::class, [
+            'by_reference' => false,
+            'class' => Actor::class,
+            'query_builder' => function (ActorRepository $er) {
+                return $er->createQueryBuilder('a')
+                    ->orderBy('a.name', 'ASC');
+            },
+            'choice_label' => 'name',
+            'multiple' => true,
+            'expanded' => true
+        ]);
+        
     }
 
     public function configureOptions(OptionsResolver $resolver): void
