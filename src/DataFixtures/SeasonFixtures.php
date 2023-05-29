@@ -7,6 +7,7 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 class SeasonFixtures extends Fixture implements DependentFixtureInterface
 {
@@ -46,6 +47,15 @@ class SeasonFixtures extends Fixture implements DependentFixtureInterface
         $manager->flush();
     } */
 
+    protected SluggerInterface $slugger;
+
+    public function  __construct(SluggerInterface $sluggerInterface)
+    {
+        $this->slugger = $sluggerInterface;
+    }
+
+
+
     public function load(ObjectManager $manager): void
     {
 
@@ -66,6 +76,10 @@ class SeasonFixtures extends Fixture implements DependentFixtureInterface
 
             $season->setYear($faker->year());
             $season->setDescription($faker->paragraphs(3, true));
+
+            $slug = $this->slugger->slug($season->getNumber());
+            $season->setSlug($slug);
+
             $pro++;
             if ($pro < 11) {
 

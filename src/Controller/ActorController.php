@@ -5,7 +5,7 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-
+use Symfony\Component\String\Slugger\SluggerInterface;
 use App\Repository\ActorRepository;
 use App\Entity\Program;
 use App\Entity\Actor;
@@ -24,7 +24,7 @@ class ActorController extends AbstractController
         ]);
     }
 
-    #[Route('/show/{id<^[0-9]+$>}', name: 'show')]
+    #[Route('/show/{slug}', name: 'show')]
     public function show(Actor $actor): Response
     {
         if (!$actor) {

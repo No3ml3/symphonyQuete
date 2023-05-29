@@ -8,6 +8,7 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 class EpisodeFixtures extends Fixture implements DependentFixtureInterface
 {
@@ -31,6 +32,15 @@ class EpisodeFixtures extends Fixture implements DependentFixtureInterface
 
         ],
     ]; */
+
+
+    protected SluggerInterface $slugger;
+
+    public function  __construct(SluggerInterface $sluggerInterface)
+    {
+        $this->slugger = $sluggerInterface;
+    }
+
 
     public function load(ObjectManager $manager): void
     {
@@ -64,7 +74,11 @@ class EpisodeFixtures extends Fixture implements DependentFixtureInterface
                 $episode->setNumber($pro); 
             }
 
+            $episode->setDuration($faker->numberBetween(1, 90));
             $episode->setSynopsis($faker->paragraphs(3, true));
+
+            $slug = $this->slugger->slug($episode->getTitle());
+            $episode->setSlug($slug);
 
             $sea++;
             if ($sea < 13) {

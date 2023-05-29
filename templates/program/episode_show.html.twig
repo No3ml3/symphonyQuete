@@ -6,8 +6,10 @@
 {% block body %}
 	<main>
 		<h1>Episode</h1>
-        <h2>nom du programme {{ program.title }}</h2>
-        <h3>numero de la saison {{ season.number }}</h3>
+		<h2>nom du programme
+			{{ program.title }}</h2>
+		<h3>numero de la saison
+			{{ season.number }}</h3>
 
 		<table class="table">
 			<tbody>
@@ -26,6 +28,10 @@
 				<tr>
 					<th>Synospis</th>
 					<td>{{ episode.synopsis }}</td>
+				</tr>
+				<tr>
+					<th>Duration</th>
+					<td>{{ episode.duration}}</td>
 				</tr>
 			</tbody>
 		</table>
