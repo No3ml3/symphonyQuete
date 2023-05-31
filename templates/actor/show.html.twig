@@ -14,4 +14,10 @@
 		<li>Aucun programme pour cet acteur</li>
 	{% endfor %}
 
+	<img class="align-self-start mr-3" src="{{ vich_uploader_asset(actor) }}" alt="{{ actor.name }} picture">
+
+	<a href="{{ path('actor_app_actor_edit', {'id': actor.id}) }}">edit</a>
+
+	{{ include('actor/_delete_form.html.twig') }}
+
 {% endblock %}
