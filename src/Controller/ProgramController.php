@@ -2,6 +2,8 @@
 // src/Controller/ProgramController.php
 namespace App\Controller;
 
+use App\Entity\Comment;
+use App\Entity\Comments;
 use App\Repository\EpisodeRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,12 +15,14 @@ use App\Entity\Season;
 use App\Entity\Episode;
 use Symfony\Component\HttpFoundation\Request;
 use App\Form\ProgramType;
+use App\Repository\CommentsRepository;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use App\Service\ProgramDuration;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email as MimeEmail;
+use App\Form\CommentsType;
 
 #[Route('/program', name: 'program_')]
 class ProgramController extends AbstractController
@@ -98,5 +102,28 @@ class ProgramController extends AbstractController
     public function showEpisode(program $program, season $season, episode $episode): Response
     {
         return $this->render('program/episode_show.html.twig', ['program' => $program, 'season' => $season, 'episode' => $episode]);
+    }
+
+    #[Route('/show/{program}/season/{season}/episode/{episode}/comment', name: 'app_comments_new', methods: ['GET', 'POST'])]
+    public function newComments(CommentsRepository $commentsRepository, program $program, season $season, episode $episode, Request $request): Response
+    {
+        $comment = new Comments();
+        $form = $this->createForm(CommentsType::class, $comment);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $commentsRepository->save($comment, true);
+  /*           var_dump($program);
+            exit(); */
+            /*  return $this->redirectToRoute('program_episode_show',['program' => $program, 'season' => $season, 'episode' => $episode], Response::HTTP_SEE_OTHER); */
+            /* return $this->redirectToRoute('program_episode_show',{'program':program.id,'season':season.id, 'episode':episode.id}, Response::HTTP_SEE_OTHER); */
+            return $this->redirectToRoute('program_episode_show', ['program' => $program->getId(), 'season' => $season->getId(), 'episode' => $episode->getId()], Response::HTTP_SEE_OTHER);
+          /*  return $this->render('program/episode_show.html.twig', ['program' => $program, 'season' => $season, 'episode' => $episode]); */
+        }
+
+        return $this->renderForm('comments/new.html.twig', [
+            'comment' => $comment,
+            'form' => $form,
+        ]);
     }
 }

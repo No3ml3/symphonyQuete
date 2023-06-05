@@ -35,6 +35,19 @@
 				</tr>
 			</tbody>
 		</table>
+		{% if app.user %}
+			<a href="{{path('program_app_comments_new',{'program':program.id,'season':season.id, 'episode':episode.id})}}">add a comment</a>
+			{# <a href="{{path('program_episode_show',{'program':program.id,'season':season.id, 'episode':episode.id})}}">show Me</a> #}
+		{% endif %}
+		<br>
+		
+		{% for comments in episode.comments %}
+		<h6>{{ comments.author.email }}</h6>
+			<li>{{ comments.rate ~ ' ' ~ comments.comment }}</li>
+		{% else %}
+			Aucune commentaire trouvée.
+		{% endfor %}
+		<br>
 		<a href="{{path('program_season_show',{'program':program.id,'season':season.id})}}">back to saison</a>
 
 	</main>
