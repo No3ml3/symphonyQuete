@@ -56,9 +56,6 @@ class ProgramController extends AbstractController
 
 
         if ($form->isSubmitted() && $form->isValid()) {
-
-            var_dump($program);
-            exit();
             
             $slug = $slugger->slug($program->getTitle());
             $program->setSlug($slug);
