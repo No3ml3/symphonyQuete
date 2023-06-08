@@ -5,10 +5,12 @@ namespace App\Controller;
 use App\Entity\Comments;
 use App\Form\CommentsType;
 use App\Repository\CommentsRepository;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+
 
 #[Route('/comments')]
 class CommentsController extends AbstractController
@@ -21,25 +23,6 @@ class CommentsController extends AbstractController
         ]);
     }
 
-/*     #[Route('/comment', name: 'comments_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, CommentsRepository $commentsRepository): Response
-    {
-        $comment = new Comments();
-        $form = $this->createForm(CommentsType::class, $comment);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $commentsRepository->save($comment, true);
-
-            return $this->redirectToRoute('episode_show', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->renderForm('comments/new.html.twig', [
-            'comment' => $comment,
-            'form' => $form,
-        ]);
-    } */
-
     #[Route('/{id}', name: 'app_comments_show', methods: ['GET'])]
     public function show(Comments $comment): Response
     {
@@ -49,6 +32,7 @@ class CommentsController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_comments_edit', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_CONTRIBUTOR')]
     public function edit(Request $request, Comments $comment, CommentsRepository $commentsRepository): Response
     {
         $form = $this->createForm(CommentsType::class, $comment);
@@ -60,7 +44,7 @@ class CommentsController extends AbstractController
             return $this->redirectToRoute('app_comments_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->renderForm('comments/edit.html.twig', [
+        return $this->render('comments/edit.html.twig', [
             'comment' => $comment,
             'form' => $form,
         ]);
@@ -69,10 +53,16 @@ class CommentsController extends AbstractController
     #[Route('/{id}', name: 'app_comments_delete', methods: ['POST'])]
     public function delete(Request $request, Comments $comment, CommentsRepository $commentsRepository): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$comment->getId(), $request->request->get('_token'))) {
+
+        if ($this->getUser() !== $comment->getAuthor() && array_search('ROLE_ADMIN', $this->getUser()->getRoles()) === FALSE) {
+            throw $this->createAccessDeniedException('Only the owner or the admin can delete the comment!');
+        }
+
+
+        if ($this->isCsrfTokenValid('delete' . $comment->getId(), $request->request->get('_token'))) {
             $commentsRepository->remove($comment, true);
         }
 
-        return $this->redirectToRoute('app_comments_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('program_index', [], Response::HTTP_SEE_OTHER);
     }
 }

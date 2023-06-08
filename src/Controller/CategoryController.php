@@ -10,6 +10,7 @@ use App\Repository\ProgramRepository;
 use Symfony\Component\VarDumper\VarDumper;
 use App\Form\CategoryType;
 use App\Entity\Category;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\Request;
 
 #[Route('/category', name: 'category_')]
@@ -26,6 +27,7 @@ class CategoryController extends AbstractController
     }
 
     #[Route('/new', name: 'new')]
+    #[IsGranted('ROLE_ADMIN')]
     public function new(Request $request, CategoryRepository $categoryRepository): Response
     {
         $category = new Category();

@@ -35,15 +35,18 @@
 				</tr>
 			</tbody>
 		</table>
+
 		{% if app.user %}
 			<a href="{{path('program_app_comments_new',{'program':program.id,'season':season.id, 'episode':episode.id})}}">add a comment</a>
-			{# <a href="{{path('program_episode_show',{'program':program.id,'season':season.id, 'episode':episode.id})}}">show Me</a> #}
 		{% endif %}
 		<br>
-		
+
 		{% for comments in episode.comments %}
-		<h6>{{ comments.author.email }}</h6>
+			<h6>{{ comments.author.email }}</h6>
 			<li>{{ comments.rate ~ ' ' ~ comments.comment }}</li>
+			{% if is_granted("ROLE_CONTRIBUTOR") %}
+				{{ include('comments/_delete_form.html.twig') }}
+			{% endif %}
 		{% else %}
 			Aucune commentaire trouvée.
 		{% endfor %}

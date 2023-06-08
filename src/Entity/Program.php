@@ -71,6 +71,9 @@ class Program
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?DatetimeInterface $updatedAt = null;
 
+    #[ORM\ManyToOne(inversedBy: 'programs')]
+    private ?User $owner = null;
+
     public function __construct()
     {
         $this->seasons = new ArrayCollection();
@@ -248,5 +251,17 @@ class Program
     public function getPosterFile(): ?File
     {
         return $this->posterFile;
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): self
+    {
+        $this->owner = $owner;
+
+        return $this;
     }
 }

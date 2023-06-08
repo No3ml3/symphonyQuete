@@ -26,6 +26,8 @@ class UserFixtures extends Fixture
             $contributor,
             'contributorpassword'
         );
+        $this->addReference('user_contributor1', $contributor);
+    
 
         $contributor->setPassword($hashedPassword);
         $manager->persist($contributor);
@@ -39,9 +41,17 @@ class UserFixtures extends Fixture
             'adminpassword'
         );
         $admin->setPassword($hashedPassword);
+        $this->addReference('user_contributor2', $contributor);
+
         $manager->persist($admin);
 
         // Sauvegarde des 2 nouveaux utilisateurs :
         $manager->flush();
+    }
+    public function getDependencies()
+    {
+        return [
+            ProgramFixtures::class,
+        ];
     }
 }

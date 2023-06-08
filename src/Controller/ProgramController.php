@@ -23,6 +23,8 @@ use App\Service\ProgramDuration;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email as MimeEmail;
 use App\Form\CommentsType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 #[Route('/program', name: 'program_')]
 class ProgramController extends AbstractController
@@ -49,14 +51,19 @@ class ProgramController extends AbstractController
     public function new(Request $request, MailerInterface $mailer, ProgramRepository $programRepository, SluggerInterface $slugger): Response
     {
         $program = new Program();
-
         $form = $this->createForm(ProgramType::class, $program);
         $form->handleRequest($request);
 
+
         if ($form->isSubmitted() && $form->isValid()) {
 
+            var_dump($program);
+            exit();
+            
             $slug = $slugger->slug($program->getTitle());
             $program->setSlug($slug);
+
+            $program->setOwner($this->getUser());
 
             $programRepository->save($program, true);
 
@@ -75,6 +82,33 @@ class ProgramController extends AbstractController
         return $this->render('program/new.html.twig', [
             'form' => $form,
             'program' => $program,
+        ]);
+    }
+    #[Route('/{slug}/edit', name: 'edit', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_ADMIN')]
+    public function edit(Request $request, Program $program, ProgramRepository $programRepository, SluggerInterface $slugger): Response
+    {
+        $form = $this->createForm(ProgramType::class, $program);
+        $form->handleRequest($request);
+
+        if ($this->getUser() !== $program->getOwner()) {
+            // If not the owner, throws a 403 Access Denied exception
+            throw $this->createAccessDeniedException('Only the owner can edit the program!');
+        }
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $slug = $slugger->slug($program->getTitle());
+            $program->setSlug($slug);
+
+            $programRepository->save($program, true);
+            $this->addFlash('success', 'The new program has been update');
+            return $this->redirectToRoute('program_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->renderForm('program/edit.html.twig', [
+            'season' => $program,
+            'form' => $form,
         ]);
     }
 
@@ -105,23 +139,21 @@ class ProgramController extends AbstractController
     }
 
     #[Route('/show/{program}/season/{season}/episode/{episode}/comment', name: 'app_comments_new', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_CONTRIBUTOR')]
     public function newComments(CommentsRepository $commentsRepository, program $program, season $season, episode $episode, Request $request): Response
     {
         $comment = new Comments();
         $form = $this->createForm(CommentsType::class, $comment);
         $form->handleRequest($request);
 
+        $comment->setAuthor($this->getUser());
+
         if ($form->isSubmitted() && $form->isValid()) {
             $commentsRepository->save($comment, true);
-  /*           var_dump($program);
-            exit(); */
-            /*  return $this->redirectToRoute('program_episode_show',['program' => $program, 'season' => $season, 'episode' => $episode], Response::HTTP_SEE_OTHER); */
-            /* return $this->redirectToRoute('program_episode_show',{'program':program.id,'season':season.id, 'episode':episode.id}, Response::HTTP_SEE_OTHER); */
             return $this->redirectToRoute('program_episode_show', ['program' => $program->getId(), 'season' => $season->getId(), 'episode' => $episode->getId()], Response::HTTP_SEE_OTHER);
-          /*  return $this->render('program/episode_show.html.twig', ['program' => $program, 'season' => $season, 'episode' => $episode]); */
         }
 
-        return $this->renderForm('comments/new.html.twig', [
+        return $this->render('comments/new.html.twig', [
             'comment' => $comment,
             'form' => $form,
         ]);

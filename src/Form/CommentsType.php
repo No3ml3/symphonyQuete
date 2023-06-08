@@ -24,8 +24,7 @@ class CommentsType extends AbstractType
                         ->orderBy('e.id', 'ASC');
                 }, */
                 'choice_label' => 'title',
-            ])
-            ->add('Author', null, ['choice_label' => 'email']);
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
